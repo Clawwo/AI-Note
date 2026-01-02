@@ -1,9 +1,9 @@
 package dto
 
-type HelloWorldRequest struct {
+type ExampleRequest struct {
 	Name string `json:"name" validate:"required,min=3"`
 }
 
-type HelloWorldResponse struct {
+type ExampleResponse struct {
 	Message string `json:"message"`
 }
