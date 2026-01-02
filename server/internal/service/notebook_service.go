@@ -12,6 +12,7 @@ import (
 
 type INotebookService interface {
 	Create(ctx context.Context, req *dto.CreateNotebookRequest) (*dto.CreateNotebookResponse, error)
+	Show(ctx context.Context, id uuid.UUID) (*dto.ShowNotebookResponse, error)
 }
 
 type notebookService struct {
@@ -44,3 +45,20 @@ func (c *notebookService) Create(ctx context.Context, req *dto.CreateNotebookReq
 		Id: notebook.Id,
 	}, nil
 }
+
+func (c* notebookService) Show(ctx context.Context, id uuid.UUID) (*dto.ShowNotebookResponse, error) {
+	notebook, err := c.notebookRepository.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	res := dto.ShowNotebookResponse{
+		Id: notebook.Id,
+		Name: notebook.Name,
+		ParentId: notebook.Parent_id,
+		CreatedAt: notebook.Created_at,
+		UpdatedAt: notebook.Updated_at,
+	}
+	return &res, nil
+}
+
