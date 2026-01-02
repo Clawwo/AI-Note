@@ -11,12 +11,12 @@ func ConnectDB(connectionString string) *pgxpool.Pool {
 	var err error
 	db, err := pgxpool.New(context.Background(), connectionString)
 	if err != nil {
-		log.Panicf("Unable to connect to DB: %v", err)
+		log.Panicf("Tidak dapat terhubung ke database: %v", err)
 	}
 
 	err = db.Ping(context.Background())
 	if err != nil {
-		log.Panicf("Failed to ping: %v", err)
+		log.Panicf("Gagal Tersambung: %v", err)
 	}
 
 	return db
