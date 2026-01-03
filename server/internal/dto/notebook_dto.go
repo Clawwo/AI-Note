@@ -24,3 +24,13 @@ type ShowNotebookResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+// DTO untuk memperbarui notebook
+type UpdateNotebookRequest struct {
+	Id uuid.UUID 
+	Name string `json:"name" validate:"required"`
+}
+
+type UpdateNotebookResponse struct {
+	Id uuid.UUID `json:"id"`
+}
