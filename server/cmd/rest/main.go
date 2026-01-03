@@ -26,7 +26,7 @@ func main() {
 	notebookRepository := repository.NewNotebookRepository(db)
 
 	notebookService := service.NewNotebookService(
-		notebookRepository,
+		notebookRepository, db,
 	)
 
 	notebookController := controller.NewNotebookController(
