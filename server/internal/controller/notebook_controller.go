@@ -15,6 +15,7 @@ type INotebookController interface {
 	Show(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
 	Delete(ctx *fiber.Ctx) error
+	MoveNotebook(ctx *fiber.Ctx) error
 }
 
 type notebookController struct {
@@ -28,9 +29,10 @@ func NewNotebookController(service service.INotebookService) INotebookController
 func (c *notebookController) RegisterRoutes(r fiber.Router) {
 	h := r.Group("/notebook/v1")
 	h.Post("", c.Create)
-	h.Get(":id", c.Show)
-	h.Put(":id", c.Update)
-	h.Delete(":id", c.Delete)
+	h.Get("/:id", c.Show)
+	h.Put("/:id", c.Update)
+	h.Delete("/:id", c.Delete)
+	h.Put("/:id/move", c.MoveNotebook)
 }
 
 // Membuat notebook baru
@@ -96,4 +98,22 @@ func (c *notebookController) Delete(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(serverutils.SuccessResponse[any]("Berhasil menghapus Notebook", nil))
+}
+
+func (c *notebookController) MoveNotebook(ctx *fiber.Ctx) error {
+	idParams := ctx.Params("id")
+	id, _ := uuid.Parse(idParams)
+
+	var req dto.MoveNotebookRequest
+	if err := ctx.BodyParser(&req); err != nil {
+		return err
+	}
+	req.Id = id
+
+	res, err := c.service.MoveNotebook(ctx.Context(), &req)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(serverutils.SuccessResponse("Berhasil memindahkan Notebook", res))
 }
