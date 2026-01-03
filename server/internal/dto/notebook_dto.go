@@ -34,3 +34,13 @@ type UpdateNotebookRequest struct {
 type UpdateNotebookResponse struct {
 	Id uuid.UUID `json:"id"`
 }
+
+// DTO untuk memindahkan notebook
+type MoveNotebookRequest struct {
+	Id uuid.UUID 
+	ParentId *uuid.UUID `json:"parent_id"`
+}
+
+type MoveNotebookResponse struct {
+	Id uuid.UUID `json:"id"`
+}
