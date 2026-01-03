@@ -13,6 +13,7 @@ import (
 type INotebookService interface {
 	Create(ctx context.Context, req *dto.CreateNotebookRequest) (*dto.CreateNotebookResponse, error)
 	Show(ctx context.Context, id uuid.UUID) (*dto.ShowNotebookResponse, error)
+	Update(ctx context.Context, req *dto.UpdateNotebookRequest) (*dto.UpdateNotebookResponse, error)
 }
 
 type notebookService struct {
@@ -25,6 +26,7 @@ func NewNotebookService(notebookRepository repository.INotebookRepository) INote
 	}
 }
 
+// Membuat notebook baru
 func (c *notebookService) Create(ctx context.Context, req *dto.CreateNotebookRequest) (*dto.CreateNotebookResponse, error) {
 
 	notebook := entity.Notebook{
@@ -46,6 +48,7 @@ func (c *notebookService) Create(ctx context.Context, req *dto.CreateNotebookReq
 	}, nil
 }
 
+// Menampilkan detail notebook berdasarkan ID
 func (c* notebookService) Show(ctx context.Context, id uuid.UUID) (*dto.ShowNotebookResponse, error) {
 	notebook, err := c.notebookRepository.GetByID(ctx, id)
 	if err != nil {
@@ -58,6 +61,29 @@ func (c* notebookService) Show(ctx context.Context, id uuid.UUID) (*dto.ShowNote
 		ParentId: notebook.Parent_id,
 		CreatedAt: notebook.Created_at,
 		UpdatedAt: notebook.Updated_at,
+	}
+	return &res, nil
+}
+
+// Memperbarui notebook berdasarkan ID
+func (c* notebookService) Update(ctx context.Context, req *dto.UpdateNotebookRequest) (*dto.UpdateNotebookResponse, error) {
+	notebook, err := c.notebookRepository.GetByID(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+	notebook.Name = req.Name
+	notebook.Updated_at = now
+
+	err = c.notebookRepository.Update(ctx, notebook)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := dto.UpdateNotebookResponse{
+		Id: notebook.Id,
 	}
 	return &res, nil
 }

@@ -16,6 +16,7 @@ type INotebookRepository interface {
 	UsingTx(ctx context.Context, tx database.DatabaseQueryer) INotebookRepository
 	Create(ctx context.Context, notebook *entity.Notebook) error
 	GetByID(ctx context.Context, id uuid.UUID) (*entity.Notebook, error)
+	Update(ctx context.Context, notebook *entity.Notebook) error
 }
 
 type notebookRepository struct {
@@ -28,6 +29,7 @@ func (n *notebookRepository) UsingTx(ctx context.Context, tx database.DatabaseQu
 	}
 }
 
+// Membuat notebook baru
 func (n *notebookRepository) Create(ctx context.Context, notebook *entity.Notebook) error {
 	_, err := n.db.Exec(
 		ctx,
@@ -46,6 +48,8 @@ func (n *notebookRepository) Create(ctx context.Context, notebook *entity.Notebo
 
 	return nil
 }
+
+// Mengambil notebook berdasarkan ID
 func (n *notebookRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Notebook, error) {
 	row := n.db.QueryRow(
 		ctx,
@@ -73,6 +77,23 @@ func (n *notebookRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity
 	return &notebook, nil
 }
 
+// Memperbarui notebook berdasarkan ID
+func (n *notebookRepository) Update(ctx context.Context, notebook *entity.Notebook) error {
+	_, err := n.db.Exec(
+		ctx,
+		`Update notebook SET name = $1, parent_id = $2, updated_at = $3 WHERE id = $4`,
+		notebook.Name,
+		notebook.Parent_id,
+		notebook.Updated_at,
+		notebook.Id,
+	)
+		
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func NewNotebookRepository(db *pgxpool.Pool) INotebookRepository {
 	return &notebookRepository{
