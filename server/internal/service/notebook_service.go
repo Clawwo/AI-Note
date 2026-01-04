@@ -13,6 +13,7 @@ import (
 )
 
 type INotebookService interface {
+	GetAll(ctx context.Context) ([]*dto.GetAllNotebookResponse, error)
 	Create(ctx context.Context, req *dto.CreateNotebookRequest) (*dto.CreateNotebookResponse, error)
 	Show(ctx context.Context, id uuid.UUID) (*dto.ShowNotebookResponse, error)
 	Update(ctx context.Context, req *dto.UpdateNotebookRequest) (*dto.UpdateNotebookResponse, error)
@@ -30,6 +31,28 @@ func NewNotebookService(notebookRepository repository.INotebookRepository, db *p
 		notebookRepository: notebookRepository,
 		db: db,
 	}
+}
+
+// Menampilkan semua notebook
+func (c *notebookService) GetAll(ctx context.Context) ([]*dto.GetAllNotebookResponse, error) {
+
+	notebooks, err := c.notebookRepository.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*dto.GetAllNotebookResponse
+	for _, notebook := range notebooks {
+		res = append(res, &dto.GetAllNotebookResponse{
+			Id: notebook.Id,
+			Name: notebook.Name,
+			ParentId: notebook.Parent_id,
+			CreatedAt: notebook.Created_at,
+			UpdatedAt: notebook.Updated_at,
+		})
+	}
+
+	return res, nil
 }
 
 // Membuat notebook baru
